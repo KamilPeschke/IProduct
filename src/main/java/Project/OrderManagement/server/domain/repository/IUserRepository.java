@@ -1,11 +1,12 @@
 package Project.OrderManagement.server.domain.repository;
-
 import Project.OrderManagement.server.domain.entity.UserEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
+public interface IUserRepository {
+
+    UserEntity save(UserEntity user);
+    Optional<UserEntity> findById(Long id);
     Optional<UserEntity> findByUsername(String username);
+
 }

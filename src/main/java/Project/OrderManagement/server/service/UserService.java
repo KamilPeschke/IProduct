@@ -6,10 +6,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import Project.OrderManagement.server.NotFoundException;
-import Project.OrderManagement.server.domain.repository.UserRepository;
+import Project.OrderManagement.server.repository.UserRepository;
 import Project.OrderManagement.server.service.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import Project.OrderManagement.server.domain.entity.UserEntity;
 import Project.OrderManagement.server.domain.service.IUserService;
