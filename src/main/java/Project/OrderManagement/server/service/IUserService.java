@@ -1,14 +1,15 @@
-package Project.OrderManagement.server.domain.service;
+package Project.OrderManagement.server.service;
 
-import Project.OrderManagement.server.domain.entity.UserEntity;
-import Project.OrderManagement.server.service.dto.*;
-import org.apache.catalina.User;
+import Project.OrderManagement.server.dto.response.*;
+import Project.OrderManagement.server.model.entity.UserEntity;
 
 import java.util.Optional;
 
 public interface IUserService {
 
     UserEntity findUserById(IFindUserByIdDto findUserByIdDto);
+
+    Long getUserIdByUsername (String username);
 
     UserEntity registerUser(IRegisterUserDto registerUserDto);
 

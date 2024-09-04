@@ -1,10 +1,12 @@
-package Project.OrderManagement.server.security;
+package Project.OrderManagement.server.configuration.security;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,18 +26,21 @@ public class JwtUtils {
     private String SECRET_KEY;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateTokenJwt(String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", username);
 
-        JwtBuilder builder = Jwts.builder()
-                .claims(claims)
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey());
-        return builder.compact();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .compact();
     }
 
     public Claims getClaimsFromToken(String token) {
@@ -51,6 +56,7 @@ public class JwtUtils {
             getClaimsFromToken(token);
             return true;
         } catch (Exception e) {
+            System.out.println("Token validation failed: " + e.getMessage());
             return false;
         }
     }

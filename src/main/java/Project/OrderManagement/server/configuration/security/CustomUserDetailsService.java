@@ -1,7 +1,7 @@
-package Project.OrderManagement.server.config;
+package Project.OrderManagement.server.configuration.security;
 
-import Project.OrderManagement.server.domain.entity.UserEntity;
-import Project.OrderManagement.server.domain.repository.UserRepository;
+import Project.OrderManagement.server.model.entity.UserEntity;
+import Project.OrderManagement.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

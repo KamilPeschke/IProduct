@@ -1,4 +1,4 @@
-package Project.OrderManagement.server.service.dto;
+package Project.OrderManagement.server.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

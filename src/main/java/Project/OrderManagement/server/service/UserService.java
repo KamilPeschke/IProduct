@@ -1,18 +1,15 @@
 package Project.OrderManagement.server.service;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import Project.OrderManagement.server.NotFoundException;
-import Project.OrderManagement.server.domain.repository.UserRepository;
-import Project.OrderManagement.server.service.dto.*;
+import Project.OrderManagement.server.exception.NotFoundException;
+import Project.OrderManagement.server.dto.response.*;
+import Project.OrderManagement.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import Project.OrderManagement.server.domain.entity.UserEntity;
-import Project.OrderManagement.server.domain.service.IUserService;
+import Project.OrderManagement.server.model.entity.UserEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +30,12 @@ public class UserService implements IUserService {
     public UserEntity findUserById(IFindUserByIdDto findUserByIdDto){
         return userRepository.findById(findUserByIdDto.getId()).orElseThrow(() ->
                 new NotFoundException(MessageFormat.format("User with id {0} does not exist", findUserByIdDto.getId())));
+    }
+
+    public Long getUserIdByUsername(String username) {
+        Optional<UserEntity> user = userRepository.findByUsername(username);
+        UserEntity userEntity = user.get();
+        return userEntity.getId();
     }
 
     @Override
