@@ -13,7 +13,7 @@ public interface IUserService {
 
     UserEntity registerUser(IRegisterUserDto registerUserDto);
 
-    UserEntity updateUser(IUpdateUserDto updateUser);
+    UserEntity updateUser(IUpdateUserDto updateUser, Long userId);
 
     Boolean deleteUser(IDeleteUserDto deleteUserDto);
 

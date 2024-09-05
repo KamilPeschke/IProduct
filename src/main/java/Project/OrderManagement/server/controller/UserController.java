@@ -40,11 +40,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserEntityDto>registerUser(@RequestBody IRegisterUserDto registerUserDto){
 
-        System.out.println("Registering user: " + registerUserDto.getUsername());
-
         String token = jwtUtils.generateTokenJwt(registerUserDto.getUsername());
         UserEntity user = userService.registerUser(registerUserDto);
         UserEntityDto response = new UserEntityDto(user,token);
+        if()
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -67,20 +66,17 @@ public class UserController {
 
     @PostMapping("/update")
     public ResponseEntity<UserEntity> updateUser(@RequestBody IUpdateUserDto updateUserDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
+        try{
 
-            Long userId = userService.getUserIdByUsername(username);
+            Long userId = userService.getUserIdFromTokenJwt();
+            UserEntity updatedUser = userService.updateUser(updateUserDto, userId);
 
-            updateUserDto.setId(userId);
-
-            UserEntity updatedUser = userService.updateUser(updateUserDto);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        }
 
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }catch (RuntimeException e){
+
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

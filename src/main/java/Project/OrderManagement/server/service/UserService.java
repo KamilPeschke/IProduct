@@ -10,6 +10,9 @@ import Project.OrderManagement.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import Project.OrderManagement.server.model.entity.UserEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +41,18 @@ public class UserService implements IUserService {
         return userEntity.getId();
     }
 
+    public Long getUserIdFromTokenJwt() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return userRepository.findByUsername(userDetails.getUsername())
+                    .map(UserEntity::getId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        }
+        throw new RuntimeException("User is not authenticated");
+    }
+
     @Override
     public UserEntity registerUser(final IRegisterUserDto registerUserDto) {
         UserEntity user = new UserEntity();
@@ -45,6 +60,13 @@ public class UserService implements IUserService {
         Optional<UserEntity> existingUserByUsername = userRepository.findByUsername(registerUserDto.getUsername());
         if (existingUserByUsername.isPresent()) {
             throw new RuntimeException("User already registered with this username");
+        }
+
+        if(registerUserDto.getUsername().trim().isEmpty()){
+            throw new RuntimeException("You must provide username !");
+        }
+        if(registerUserDto.getPassword().trim().isEmpty()){
+            throw new RuntimeException("You must provide password !");
         }
         user.setUsername(registerUserDto.getUsername());
         user.setPassword(encodePassword.encode(registerUserDto.getPassword()));
@@ -55,19 +77,27 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserEntity updateUser(IUpdateUserDto updateUserDto) {
-        UserEntity userEntity = userRepository.findById(updateUserDto.getId())
+    public Optional<UserEntity> loginUser(ILoginUserDto loginUserDto) {
+        Optional<UserEntity> userOptional = userRepository.findByUsername(loginUserDto.getUsername());
+        return userOptional.filter(userEntity ->
+                encodePassword.matches(loginUserDto.getPassword(), userEntity.getPassword())
+        );
+    }
+
+    public UserEntity updateUser(IUpdateUserDto updateUserDto, Long userId) {
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (updateUserDto.getUsername() != null) {
+        if (updateUserDto.getUsername() != null && !updateUserDto.getUsername().trim().isEmpty()) {
             userEntity.setUsername(updateUserDto.getUsername());
         }
-        if (updateUserDto.getPassword() != null) {
-            userEntity.setPassword(encodePassword.encode(updateUserDto.getPassword()));
-        }
-        if (updateUserDto.getEmail() != null) {
+        if (updateUserDto.getEmail() != null && !updateUserDto.getEmail().trim().isEmpty()) {
             userEntity.setEmail(updateUserDto.getEmail());
         }
+        if (updateUserDto.getPassword() != null && !updateUserDto.getPassword().trim().isEmpty()) {
+            userEntity.setPassword(encodePassword.encode(updateUserDto.getPassword()));
+        }
+
         userEntity.setUpdatedAt(LocalDateTime.now());
 
         return saveUser(userEntity);
@@ -84,11 +114,5 @@ public class UserService implements IUserService {
         }
             return false;
     }
-    @Override
-    public Optional<UserEntity> loginUser(ILoginUserDto loginUserDto) {
-        Optional<UserEntity> userOptional = userRepository.findByUsername(loginUserDto.getUsername());
-        return userOptional.filter(userEntity ->
-                encodePassword.matches(loginUserDto.getPassword(), userEntity.getPassword())
-        );
-    }
+
 }

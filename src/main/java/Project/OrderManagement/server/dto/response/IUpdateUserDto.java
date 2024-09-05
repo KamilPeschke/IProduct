@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class IUpdateUserDto {
-    private long id;
     private String username;
     private String password;
     private String email;
