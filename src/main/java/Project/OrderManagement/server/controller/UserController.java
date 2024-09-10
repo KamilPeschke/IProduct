@@ -66,12 +66,10 @@ public class UserController {
     public ResponseEntity<UserEntity> updateUser(@RequestBody IUpdateUserDto updateUserDto) {
 
         try{
-
             Long userId = userService.getUserIdFromTokenJwt();
             UserEntity updatedUser = userService.updateUser(updateUserDto, userId);
 
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-
         }catch (RuntimeException e){
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
