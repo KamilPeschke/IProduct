@@ -8,13 +8,9 @@ import Project.OrderManagement.server.service.UserService;
 import Project.OrderManagement.server.dto.response.IFindUserByIdDto;
 import Project.OrderManagement.server.dto.response.ILoginUserDto;
 import Project.OrderManagement.server.dto.response.IRegisterUserDto;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,16 +34,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserEntityDto>registerUser(@RequestBody IRegisterUserDto registerUserDto){
+    public ResponseEntity<?>registerUser(@RequestBody IRegisterUserDto registerUserDto) {
+        try {
+            String token = jwtUtils.generateTokenJwt(registerUserDto.getUsername());
+            UserEntity user = userService.registerUser(registerUserDto);
+            UserEntityDto response = new UserEntityDto(user, token);
 
-        String token = jwtUtils.generateTokenJwt(registerUserDto.getUsername());
-        UserEntity user = userService.registerUser(registerUserDto);
-        UserEntityDto response = new UserEntityDto(user,token);
-        if()
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
-
     @PostMapping("/login")
     public ResponseEntity<?>loginUser(@RequestBody ILoginUserDto loginUserDto){
         System.out.println("login user: " + loginUserDto.getUsername());

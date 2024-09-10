@@ -10,6 +10,8 @@ import Project.OrderManagement.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import Project.OrderManagement.server.model.entity.UserEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,14 +63,14 @@ public class UserService implements IUserService {
         if (existingUserByUsername.isPresent()) {
             throw new RuntimeException("User already registered with this username");
         }
+        if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username is required");
+        }
+        if(registerUserDto.getPassword() == null || registerUserDto.getPassword().trim().isEmpty()){
+            throw new IllegalArgumentException("Password is required");
+        }
 
-        if(registerUserDto.getUsername().trim().isEmpty()){
-            throw new RuntimeException("You must provide username !");
-        }
-        if(registerUserDto.getPassword().trim().isEmpty()){
-            throw new RuntimeException("You must provide password !");
-        }
-        user.setUsername(registerUserDto.getUsername());
+        user.setUsername(registerUserDto.getUsername().toLowerCase());
         user.setPassword(encodePassword.encode(registerUserDto.getPassword()));
         user.setEmail(registerUserDto.getEmail());
         user.setCreatedAt(LocalDateTime.now());
