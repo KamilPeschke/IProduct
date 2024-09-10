@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +40,12 @@ public class UserService implements IUserService {
 
     public Long getUserIdByUsername(String username) {
         Optional<UserEntity> user = userRepository.findByUsername(username);
-        UserEntity userEntity = user.get();
-        return userEntity.getId();
+        if(user.isPresent()) {
+            UserEntity userEntity = user.get();
+            return userEntity.getId();
+        }else{
+            throw new UsernameNotFoundException("This user does not exist");
+        }
     }
 
     public Long getUserIdFromTokenJwt() {
