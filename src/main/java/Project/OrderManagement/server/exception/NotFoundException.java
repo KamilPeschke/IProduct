@@ -1,4 +1,4 @@
-package Project.OrderManagement.server;
+package Project.OrderManagement.server.exception;
 
 public class NotFoundException extends RuntimeException{
 

@@ -1,6 +1,5 @@
-package Project.OrderManagement.server.config;
-import Project.OrderManagement.server.domain.repository.UserRepository;
-import Project.OrderManagement.server.security.JwtUtils;
+package Project.OrderManagement.server.configuration.security;
+import Project.OrderManagement.server.model.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

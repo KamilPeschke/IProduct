@@ -1,4 +1,4 @@
-package Project.OrderManagement.server.request;
+package Project.OrderManagement.server.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

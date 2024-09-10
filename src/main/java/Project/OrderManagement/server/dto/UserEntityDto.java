@@ -1,6 +1,6 @@
 package Project.OrderManagement.server.dto;
 
-import Project.OrderManagement.server.domain.entity.UserEntity;
+import Project.OrderManagement.server.model.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

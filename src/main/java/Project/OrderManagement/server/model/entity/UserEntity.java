@@ -1,4 +1,4 @@
-package Project.OrderManagement.server.domain.entity;
+package Project.OrderManagement.server.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
