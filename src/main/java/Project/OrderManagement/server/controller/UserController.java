@@ -6,7 +6,6 @@ import Project.OrderManagement.server.dto.UserEntityDto;
 import Project.OrderManagement.server.configuration.security.JwtUtils;
 import Project.OrderManagement.server.model.repository.UserRepository;
 import Project.OrderManagement.server.service.UserService;
-import Project.OrderManagement.server.dto.response.IFindUserByIdDto;
 import Project.OrderManagement.server.dto.response.ILoginUserDto;
 import Project.OrderManagement.server.dto.response.IRegisterUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +45,7 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         }catch (IllegalArgumentException e){
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

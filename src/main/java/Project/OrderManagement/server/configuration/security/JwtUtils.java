@@ -34,7 +34,6 @@ public class JwtUtils {
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", username);
 
-        System.out.println(username + "from generate jwt");
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)

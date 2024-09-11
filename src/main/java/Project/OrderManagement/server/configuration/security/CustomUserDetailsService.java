@@ -30,7 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException("User with username: " + username + " not found.");
         }
-        System.out.println(username);
 
         UserEntity userEntity = userOptional.get();
         return new org.springframework.security.core.userdetails.User(

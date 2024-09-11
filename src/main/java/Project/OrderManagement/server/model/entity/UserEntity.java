@@ -35,6 +35,9 @@ public class UserEntity {
     @Email
     private String email;
 
+    @Column(name = "isVerified")
+    private Boolean isVerified = false;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

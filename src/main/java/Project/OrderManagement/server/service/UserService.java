@@ -26,6 +26,9 @@ public class UserService implements IUserService {
     @Autowired
     private PasswordEncoder encodePassword;
 
+    @Autowired
+    private EmailService emailService;
+
 
     @Override
     @Transactional
@@ -46,6 +49,8 @@ public class UserService implements IUserService {
         user.setPassword(encodePassword.encode(registerUserDto.getPassword()));
         user.setEmail(registerUserDto.getEmail());
         user.setCreatedAt(LocalDateTime.now());
+
+        emailService.sendVerificationEmail(registerUserDto.getEmail(),);
 
         return userRepository.saveUser(user);
     }
