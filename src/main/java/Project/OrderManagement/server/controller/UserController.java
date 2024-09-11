@@ -4,6 +4,7 @@ import Project.OrderManagement.server.dto.response.IUpdateUserDto;
 import Project.OrderManagement.server.model.entity.UserEntity;
 import Project.OrderManagement.server.dto.UserEntityDto;
 import Project.OrderManagement.server.configuration.security.JwtUtils;
+import Project.OrderManagement.server.model.repository.UserRepository;
 import Project.OrderManagement.server.service.UserService;
 import Project.OrderManagement.server.dto.response.IFindUserByIdDto;
 import Project.OrderManagement.server.dto.response.ILoginUserDto;
@@ -24,12 +25,14 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private JwtUtils jwtUtils;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserEntity> findUserById(@PathVariable Long id){
-        IFindUserByIdDto findUserByIdDto = new IFindUserByIdDto(id);
-        UserEntity user = userService.findUserById(findUserByIdDto);
+        UserEntity user = userRepository.findUserById(id);
         return ResponseEntity.ok(user);
     }
 
@@ -66,7 +69,7 @@ public class UserController {
     public ResponseEntity<UserEntity> updateUser(@RequestBody IUpdateUserDto updateUserDto) {
 
         try{
-            Long userId = userService.getUserIdFromTokenJwt();
+            Long userId = userRepository.getUserIdFromTokenJwt();
             UserEntity updatedUser = userService.updateUser(updateUserDto, userId);
 
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
