@@ -1,11 +1,13 @@
 package Project.OrderManagement.server.controller;
 
 import Project.OrderManagement.server.dto.response.IUpdateUserDto;
+import Project.OrderManagement.server.model.VerificationLinkStatus;
 import Project.OrderManagement.server.model.entity.UserEntity;
 import Project.OrderManagement.server.dto.UserEntityDto;
 import Project.OrderManagement.server.configuration.security.JwtUtils;
 import Project.OrderManagement.server.model.repository.UserRepository;
-import Project.OrderManagement.server.service.UserService;
+import Project.OrderManagement.server.service.email.EmailService;
+import Project.OrderManagement.server.service.user.UserService;
 import Project.OrderManagement.server.dto.response.ILoginUserDto;
 import Project.OrderManagement.server.dto.response.IRegisterUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+
+import static Project.OrderManagement.server.model.VerificationLinkStatus.*;
 
 @RequestMapping("/user")
 @Controller
@@ -28,6 +32,9 @@ public class UserController {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserEntity> findUserById(@PathVariable Long id){
@@ -49,6 +56,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+        VerificationLinkStatus status = emailService.verifyEmail(token);
+
+        switch (status) {
+            case SUCCESS:
+                return ResponseEntity.ok("Email verified successfully!");
+            case TOKEN_EXPIRED:
+                return ResponseEntity.status(HttpStatus.GONE).body("Verification token has expired.");
+            case INVALID_TOKEN:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification token.");
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+    }
+
+
     @PostMapping("/login")
     public ResponseEntity<?>loginUser(@RequestBody ILoginUserDto loginUserDto){
         System.out.println("login user: " + loginUserDto.getUsername());
@@ -78,4 +103,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+
 }

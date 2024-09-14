@@ -1,6 +1,5 @@
 package Project.OrderManagement.server.model.repository;
 
-import Project.OrderManagement.server.dto.response.IFindUserByIdDto;
 import Project.OrderManagement.server.exception.NotFoundException;
 import Project.OrderManagement.server.model.entity.UserEntity;
 import jakarta.persistence.EntityManager;
@@ -8,15 +7,18 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Repository
 public class UserRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    @Transactional
     public UserEntity saveUser(UserEntity user) {
         entityManager.persist(user);
         return user;
@@ -35,6 +37,13 @@ public class UserRepository {
                             "SELECT u FROM UserEntity u WHERE u.username = :username", UserEntity.class)
                     .setParameter("username", username)
                     .getSingleResult();
+    }
+
+    public Optional<UserEntity> findUserByEmailVerificationToken(String token) {
+        return entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.emailVerificationToken = :token", UserEntity.class)
+                .setParameter("token", token)
+                .getResultStream()
+                .findFirst();
     }
 
     public Optional<UserEntity> getUserByUsername(String username) {

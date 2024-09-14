@@ -1,10 +1,14 @@
-package Project.OrderManagement.server.service;
+package Project.OrderManagement.server.service.user;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import Project.OrderManagement.server.dto.response.*;
 import Project.OrderManagement.server.model.repository.UserRepository;
+import Project.OrderManagement.server.model.entity.ConfirmationToken;
+import Project.OrderManagement.server.service.IUserService;
+import Project.OrderManagement.server.service.email.EmailService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -33,10 +37,7 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public UserEntity registerUser(final IRegisterUserDto registerUserDto) {
-        Optional<UserEntity> existingUserByUsername = userRepository.getUserByUsername(registerUserDto.getUsername());
-        if (existingUserByUsername.isPresent()) {
-            throw new RuntimeException("User already registered with this username");
-        }
+
         if (registerUserDto.getUsername() == null || registerUserDto.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("Username is required");
         }
@@ -45,20 +46,35 @@ public class UserService implements IUserService {
         }
 
         UserEntity user = new UserEntity();
+
         user.setUsername(registerUserDto.getUsername().toLowerCase());
         user.setPassword(encodePassword.encode(registerUserDto.getPassword()));
         user.setEmail(registerUserDto.getEmail());
         user.setCreatedAt(LocalDateTime.now());
 
-        emailService.sendVerificationEmail(registerUserDto.getEmail(),);
+        userRepository.saveUser(user);
 
-        return userRepository.saveUser(user);
+        String verificationTokenForEmail = UUID.randomUUID().toString();
+        user.setEmailVerificationToken(verificationTokenForEmail);
+
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                verificationTokenForEmail,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                user
+        );
+        emailService.sendVerificationEmail(registerUserDto.getEmail(),verificationTokenForEmail);
+        emailService.saveConfirmationToken(confirmationToken);
+
+        return user;
     }
 
         @Override
         public Optional<UserEntity> loginUser (ILoginUserDto loginUserDto){
             Optional<UserEntity> userOptional = userRepository.getUserByUsername(loginUserDto.getUsername());
             return userOptional.filter(userEntity ->
+//                    userEntity.getIsVerified() &&
                     encodePassword.matches(loginUserDto.getPassword(), userEntity.getPassword())
             );
         }
@@ -82,7 +98,6 @@ public class UserService implements IUserService {
 
             return userRepository.saveUser(userEntity);
         }
-
 
     @Override
     @Transactional

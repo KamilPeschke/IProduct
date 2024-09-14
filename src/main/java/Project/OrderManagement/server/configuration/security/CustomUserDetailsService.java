@@ -2,10 +2,6 @@ package Project.OrderManagement.server.configuration.security;
 
 import Project.OrderManagement.server.model.entity.UserEntity;
 import Project.OrderManagement.server.model.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         Optional<UserEntity> userOptional = userRepository.getUserByUsername(username);
 
         if (userOptional.isEmpty()) {
