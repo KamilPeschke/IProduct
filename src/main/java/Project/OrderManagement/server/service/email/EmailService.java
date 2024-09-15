@@ -9,8 +9,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -38,8 +35,6 @@ public class EmailService {
 
     @Autowired
     ConfirmationTokenRepository confirmationTokenRepository;
-
-    private final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
     @Transactional
     public void saveConfirmationToken(ConfirmationToken token){
@@ -99,6 +94,7 @@ public class EmailService {
                 user.setIsVerified(true);
                 user.setEmailVerificationToken(null);
                 userRepository.saveUser(user);
+                confirmationToken.setConfirmedAt(LocalDateTime.now());
                 return VerificationLinkStatus.SUCCESS;
         }
 
