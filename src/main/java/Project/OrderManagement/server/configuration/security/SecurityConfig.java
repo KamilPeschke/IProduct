@@ -1,5 +1,6 @@
 package Project.OrderManagement.server.configuration.security;
 import Project.OrderManagement.server.model.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public UserRepository userRepository(){
+        return new UserRepository();
+    }
 
     @Bean
     public CustomUserDetailsService customUserDetailsService(UserRepository userRepository) {
@@ -31,7 +37,7 @@ public class SecurityConfig {
         httpSecurity.headers(AbstractHttpConfigurer::disable);
 
         httpSecurity.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/h2-console/**", "/user/login", "/user/register").permitAll()
+                .requestMatchers( "/user/login", "/user/register","/user/verify-email/**").permitAll()
                 .anyRequest().authenticated()
         );
 

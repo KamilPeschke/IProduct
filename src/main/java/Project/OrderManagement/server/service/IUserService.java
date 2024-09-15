@@ -7,10 +7,6 @@ import java.util.Optional;
 
 public interface IUserService {
 
-    UserEntity findUserById(IFindUserByIdDto findUserByIdDto);
-
-    Long getUserIdByUsername (String username);
-
     UserEntity registerUser(IRegisterUserDto registerUserDto);
 
     UserEntity updateUser(IUpdateUserDto updateUser, Long userId);

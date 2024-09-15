@@ -35,6 +35,12 @@ public class UserEntity {
     @Email
     private String email;
 
+    @Column(name = "isVerified")
+    private Boolean isVerified = false;
+
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -43,4 +49,5 @@ public class UserEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
 }
