@@ -31,6 +31,13 @@ public class UserRepository {
         }
         return userEntity;
     }
+    public Optional<UserEntity> findUserByEmail(String email) {
+        return entityManager.createQuery(
+                        "SELECT u FROM UserEntity u WHERE u.email = :email", UserEntity.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst();
+    }
 
     private UserEntity findUserByUsername(String username) {
             return entityManager.createQuery(

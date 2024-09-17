@@ -37,7 +37,7 @@ public class SecurityConfig {
         httpSecurity.headers(AbstractHttpConfigurer::disable);
 
         httpSecurity.authorizeHttpRequests(auth -> auth
-                .requestMatchers( "/user/login", "/user/register","/user/verify-email/**").permitAll()
+                .requestMatchers( "/user/login", "/user/register","/user/verify-email/**","user/resend-email/**").permitAll()
                 .anyRequest().authenticated()
         );
 

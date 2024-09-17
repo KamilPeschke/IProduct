@@ -57,7 +57,6 @@ public class UserService implements IUserService {
         String verificationTokenForEmail = UUID.randomUUID().toString();
         user.setEmailVerificationToken(verificationTokenForEmail);
 
-
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 verificationTokenForEmail,
                 LocalDateTime.now(),

@@ -76,7 +76,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?>loginUser(@RequestBody ILoginUserDto loginUserDto){
-        System.out.println("login user: " + loginUserDto.getUsername());
 
         Optional<UserEntity> user = userService.loginUser(loginUserDto);
 
@@ -104,5 +103,13 @@ public class UserController {
         }
     }
 
-
+    @PostMapping("/resend-email")
+    public ResponseEntity<String> resendVerificationEmail(@RequestParam("email") String email){
+        try {
+        emailService.resendEmailVerification(email);
+             return ResponseEntity.ok("Email send successfully!");
+         }catch (RuntimeException e){
+             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+         }
+    }
 }
