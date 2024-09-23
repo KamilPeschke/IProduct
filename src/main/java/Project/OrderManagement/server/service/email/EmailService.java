@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EmailService {
@@ -57,7 +58,6 @@ public class EmailService {
         }
     }
 
-    @Transactional
     private static String generateEmail(String token) {
         String templatePath = "src/main/resources/templates/email.html";
         String emailContent;
@@ -98,6 +98,31 @@ public class EmailService {
                 return VerificationLinkStatus.SUCCESS;
         }
 
-        return VerificationLinkStatus.INVALID_TOKEN;
+        return VerificationLinkStatus.ERROR;
+    }
+
+    @Transactional
+    public void resendEmailVerification(String email){
+        Optional<UserEntity> userEntityOptional = userRepository.findUserByEmail(email);
+
+        if(userEntityOptional.isPresent()){
+            UserEntity user = userEntityOptional.get();
+            if(user.getIsVerified()){
+                throw new IllegalStateException("Account already verified.");
+            }
+            String verificationTokenForEmail = UUID.randomUUID().toString();
+
+            ConfirmationToken confirmationToken = new ConfirmationToken(
+                    verificationTokenForEmail,
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(15),
+                    user
+            );
+
+            saveConfirmationToken(confirmationToken);
+
+            user.setEmailVerificationToken(verificationTokenForEmail);
+            sendVerificationEmail(email ,verificationTokenForEmail);
+        }
     }
 }

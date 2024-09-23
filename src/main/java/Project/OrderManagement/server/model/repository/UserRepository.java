@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -24,12 +25,20 @@ public class UserRepository {
         return user;
     }
 
+
     public UserEntity findUserById(Long id) {
         UserEntity userEntity = entityManager.find(UserEntity.class, id);
         if (userEntity == null) {
             throw new NotFoundException(String.format("User with id %d does not exist", id));
         }
         return userEntity;
+    }
+    public Optional<UserEntity> findUserByEmail(String email) {
+        return entityManager.createQuery(
+                        "SELECT u FROM UserEntity u WHERE u.email = :email", UserEntity.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst();
     }
 
     private UserEntity findUserByUsername(String username) {

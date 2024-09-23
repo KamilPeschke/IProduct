@@ -4,4 +4,5 @@ public enum VerificationLinkStatus {
     SUCCESS,
     TOKEN_EXPIRED,
     INVALID_TOKEN,
+    ERROR,
 }
