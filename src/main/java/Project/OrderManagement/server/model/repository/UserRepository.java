@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -23,6 +24,7 @@ public class UserRepository {
         entityManager.persist(user);
         return user;
     }
+
 
     public UserEntity findUserById(Long id) {
         UserEntity userEntity = entityManager.find(UserEntity.class, id);

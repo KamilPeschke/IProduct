@@ -61,16 +61,12 @@ public class UserController {
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         VerificationLinkStatus status = emailService.verifyEmail(token);
 
-        switch (status) {
-            case SUCCESS:
-                return ResponseEntity.ok("Email verified successfully!");
-            case TOKEN_EXPIRED:
-                return ResponseEntity.status(HttpStatus.GONE).body("Verification token has expired.");
-            case INVALID_TOKEN:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification token.");
-            default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
+        return switch (status) {
+            case SUCCESS -> ResponseEntity.ok("Email verified successfully!");
+            case TOKEN_EXPIRED -> ResponseEntity.status(HttpStatus.GONE).body("Verification token has expired.");
+            case INVALID_TOKEN -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification token.");
+            case ERROR -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        };
     }
 
 
@@ -98,7 +94,6 @@ public class UserController {
 
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         }catch (RuntimeException e){
-
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }

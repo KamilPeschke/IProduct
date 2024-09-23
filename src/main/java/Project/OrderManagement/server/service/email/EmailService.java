@@ -58,7 +58,6 @@ public class EmailService {
         }
     }
 
-    @Transactional
     private static String generateEmail(String token) {
         String templatePath = "src/main/resources/templates/email.html";
         String emailContent;
@@ -99,7 +98,7 @@ public class EmailService {
                 return VerificationLinkStatus.SUCCESS;
         }
 
-        return VerificationLinkStatus.INVALID_TOKEN;
+        return VerificationLinkStatus.ERROR;
     }
 
     @Transactional
@@ -119,6 +118,8 @@ public class EmailService {
                     LocalDateTime.now().plusMinutes(15),
                     user
             );
+
+            saveConfirmationToken(confirmationToken);
 
             user.setEmailVerificationToken(verificationTokenForEmail);
             sendVerificationEmail(email ,verificationTokenForEmail);

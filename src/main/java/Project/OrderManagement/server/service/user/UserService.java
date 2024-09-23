@@ -45,6 +45,12 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("Password is required");
         }
 
+        Optional<UserEntity> userEntityOptional = userRepository.findUserByEmail(registerUserDto.getEmail());
+
+        if(userEntityOptional.isPresent()){
+            throw new IllegalArgumentException("User with this email already exists.");
+        }
+
         UserEntity user = new UserEntity();
 
         user.setUsername(registerUserDto.getUsername().toLowerCase());
@@ -63,6 +69,7 @@ public class UserService implements IUserService {
                 LocalDateTime.now().plusMinutes(15),
                 user
         );
+
         emailService.sendVerificationEmail(registerUserDto.getEmail(),verificationTokenForEmail);
         emailService.saveConfirmationToken(confirmationToken);
 
