@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -24,7 +23,6 @@ public class UserRepository {
         entityManager.persist(user);
         return user;
     }
-
 
     public UserEntity findUserById(Long id) {
         UserEntity userEntity = entityManager.find(UserEntity.class, id);
@@ -41,11 +39,12 @@ public class UserRepository {
                 .findFirst();
     }
 
-    private UserEntity findUserByUsername(String username) {
+    public Optional<UserEntity> findUserByUsername(String username) {
             return entityManager.createQuery(
                             "SELECT u FROM UserEntity u WHERE u.username = :username", UserEntity.class)
                     .setParameter("username", username)
-                    .getSingleResult();
+                    .getResultStream()
+                    .findFirst();
     }
 
     public Optional<UserEntity> findUserByEmailVerificationToken(String token) {
@@ -56,13 +55,14 @@ public class UserRepository {
     }
 
     public Optional<UserEntity> getUserByUsername(String username) {
-        UserEntity userEntity = findUserByUsername(username);
-        return Optional.of(userEntity);
+        Optional<UserEntity> userEntity = findUserByUsername(username);
+        return userEntity;
     }
 
     public Long getUserIdByUsername(String username) {
-        UserEntity userEntity = findUserByUsername(username);
-        return userEntity.getId();
+        Optional<UserEntity> userEntity = findUserByUsername(username);
+        UserEntity user = userEntity.get();
+        return user.getId();
     }
 
     public Long getUserIdFromTokenJwt() {

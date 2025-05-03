@@ -45,11 +45,11 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?>registerUser(@RequestBody IRegisterUserDto registerUserDto) {
         try {
-            String token = jwtUtils.generateTokenJwt(registerUserDto.getUsername());
-            UserEntity user = userService.registerUser(registerUserDto);
-            UserEntityDto response = new UserEntityDto(user, token);
+                UserEntity user = userService.registerUser(registerUserDto);
+                String token = jwtUtils.generateTokenJwt(registerUserDto.getUsername());
+                UserEntityDto response = new UserEntityDto(user, token);
 
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         }catch (IllegalArgumentException e){
 
@@ -66,9 +66,9 @@ public class UserController {
             case TOKEN_EXPIRED -> ResponseEntity.status(HttpStatus.GONE).body("Verification token has expired.");
             case INVALID_TOKEN -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification token.");
             case ERROR -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+            case USER_AREADY_VERIFIED -> ResponseEntity.status(HttpStatus.OK).body("User already verified");
         };
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?>loginUser(@RequestBody ILoginUserDto loginUserDto){

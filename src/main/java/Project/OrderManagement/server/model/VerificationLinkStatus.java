@@ -5,4 +5,5 @@ public enum VerificationLinkStatus {
     TOKEN_EXPIRED,
     INVALID_TOKEN,
     ERROR,
+    USER_AREADY_VERIFIED
 }
