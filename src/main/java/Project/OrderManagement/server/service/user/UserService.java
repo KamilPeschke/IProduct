@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import Project.OrderManagement.server.controller.UserController;
 import Project.OrderManagement.server.dto.response.*;
 import Project.OrderManagement.server.model.repository.UserRepository;
 import Project.OrderManagement.server.model.entity.ConfirmationToken;
@@ -12,6 +13,8 @@ import Project.OrderManagement.server.service.email.EmailService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import Project.OrderManagement.server.model.entity.UserEntity;
@@ -33,6 +36,7 @@ public class UserService implements IUserService {
     @Autowired
     private EmailService emailService;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Override
     @Transactional
@@ -45,10 +49,11 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("Password is required");
         }
 
-        Optional<UserEntity> userEntityOptional = userRepository.findUserByEmail(registerUserDto.getEmail());
+        Optional<UserEntity> userWithEmailExist = userRepository.findUserByEmail(registerUserDto.getEmail());
+        Optional<UserEntity> userWithUsernameExist = userRepository.findUserByUsername(registerUserDto.getUsername());
 
-        if(userEntityOptional.isPresent()){
-            throw new IllegalArgumentException("User with this email already exists.");
+        if(userWithEmailExist.isPresent() || userWithUsernameExist.isPresent()){
+            throw new IllegalArgumentException("User with this email or username already exists.");
         }
 
         UserEntity user = new UserEntity();
@@ -57,6 +62,8 @@ public class UserService implements IUserService {
         user.setPassword(encodePassword.encode(registerUserDto.getPassword()));
         user.setEmail(registerUserDto.getEmail());
         user.setCreatedAt(LocalDateTime.now());
+
+        logger.info("Creating new user" + user);
 
         userRepository.saveUser(user);
 

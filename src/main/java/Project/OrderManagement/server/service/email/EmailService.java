@@ -65,7 +65,7 @@ public class EmailService {
         try {
             emailContent = Files.readString(Paths.get(templatePath));
 
-            String verificationLink = "http://localhost:8080/user/verify-email?token=" + token;
+            String verificationLink = "http://localhost:3010/user/verify-email?token=" + token;
             emailContent = emailContent.replace("{{verificationLink}}", verificationLink);
 
         } catch (IOException e) {
@@ -91,13 +91,19 @@ public class EmailService {
 
         if (userOptional.isPresent()) {
             UserEntity user = userOptional.get();
+
+            if (!user.getIsVerified()) {
                 user.setIsVerified(true);
                 user.setEmailVerificationToken(null);
                 userRepository.saveUser(user);
                 confirmationToken.setConfirmedAt(LocalDateTime.now());
-                return VerificationLinkStatus.SUCCESS;
-        }
 
+                return VerificationLinkStatus.SUCCESS;
+
+            }else {
+                return VerificationLinkStatus.USER_AREADY_VERIFIED;
+            }
+        }
         return VerificationLinkStatus.ERROR;
     }
 
